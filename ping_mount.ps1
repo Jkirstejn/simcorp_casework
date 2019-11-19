@@ -1,3 +1,5 @@
+Install-Module -Name Az -AllowClobber -Scope CurrentUser
+
 $resourceGroupName = "case2rg"
 $storageAccountName = (Get-AzResource -ResourceGroupName $resourceGroupName -Name case2sac*).Name
 
