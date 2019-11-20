@@ -11,12 +11,12 @@ $username = args[0]
 $password = args[1]
 $tenant = args[2]
 $resourceGroupName = args[3]
-$storageAccountName = args[4]
 
 # Log in using Az Powershell
 $credential = New-Object pscredential ($username, ($password | ConvertTo-SecureString -AsPlainText -Force))
 Connect-AzAccount -Credential $credential -ServicePrincipal -Tenant $tenant
 
+$storageAccountName = (Get-AzResource -ResourceGroupName $resourceGroupName -Name case2sac*).Name
 $storageAccount = Get-AzStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName
 $storageAccountKeys = Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -Name $storageAccountName
 
