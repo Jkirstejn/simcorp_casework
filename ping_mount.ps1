@@ -7,10 +7,10 @@ Install-Module -Name Az -AllowClobber -Scope CurrentUser -Force
 # powershell
 
 # Parsing argument list
-$username = args[0]
-$password = args[1]
-$tenant = args[2]
-$resourceGroupName = args[3]
+$username = $args[0]
+$password = $args[1]
+$tenant = $args[2]
+$resourceGroupName = $args[3]
 
 # Log in using Az Powershell
 $credential = New-Object pscredential ($username, ($password | ConvertTo-SecureString -AsPlainText -Force))
