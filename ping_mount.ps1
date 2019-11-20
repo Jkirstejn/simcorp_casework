@@ -6,28 +6,32 @@ Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI
 # Restart powershell session after installs
 powershell
 
-# Login with my service principal credentials (CLI)
-az login --service-principal -u args[0] -p args[1] --tenant args[2]
+# Parsing argument list
+$username = args[0]
+$password = args[1]
+$tenant = args[2]
+$resourceGroupName = args[3]
+$storageAccountName = args[4]
 
-$resourceGroupName = "case2rg"
-$storageAccountName = args[3]
+# Log in using Az Powershell
+$credential = New-Object pscredential ($username, ($password | ConvertTo-SecureString -AsPlainText -Force))
+Connect-AzAccount -Credential $credential -ServicePrincipal -Tenant $tenant
 
-$storageAccountKeys = az storage account keys list --account-name $storageAccountName --query '[0].value' -o tsv
+$storageAccount = Get-AzStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName
+$storageAccountKeys = Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -Name $storageAccountName
 
-Invoke-Expression -Command ("cmdkey /add: $($storageAccountName)" + ".file.core.windows.net " + `
-    "/user:AZURE\$($storageAccountName) /pass:$($storageAccountKeys)")
-
-Invoke-Expression -Command ("net use Z: \\$($storageAccountName)" + ".file.core.windows.net\fileshareping " + `
+Invoke-Expression -Command ("cmdkey /add:$([System.Uri]::new($storageAccount.Context.FileEndPoint).Host) " + `
+    "/user:AZURE\$($storageAccount.StorageAccountName) /pass:$($storageAccountKeys[0].Value)")
+Invoke-Expression -Command ("net use Z: \\$([System.Uri]::new($storageAccount.Context.FileEndPoint).Host)" + `
     "\fileshareping /persistent:Yes")
 
-# Change directory, ping and save result in log
-$vm2ip = az network public-ip list --query "[1].ipAddress"
+$vm2ip = (Get-AzPublicIpAddress -ResourceGroupName "case2rg" -Name vm2-ip).IpAddress
 Z:
 ping $vm2ip > pinglog.txt
 
 
 ################################################
-# AZ POWERSHELL implementation
+# OLD AZ POWERSHELL implementation
 #
 # Failed attempt to log in using powershell
 # $username = args[4]
@@ -50,3 +54,22 @@ ping $vm2ip > pinglog.txt
 # ping $vm2ip > pinglog.txt
 #
 ###############################################
+#
+# CLI Attempt implementation
+# Login with my service principal credentials (CLI)
+#az login --service-principal -u args[0] -p args[1] --tenant args[2]
+#
+#$storageAccountKeys = az storage account keys list --account-name $storageAccountName --query '[0].value' -o tsv
+#
+#Invoke-Expression -Command ("cmdkey /add: $($storageAccountName)" + ".file.core.windows.net " + `
+#    "/user:AZURE\$($storageAccountName) /pass:$($storageAccountKeys)")
+#
+#Invoke-Expression -Command ("net use Z: \\$($storageAccountName)" + ".file.core.windows.net\fileshareping " + `
+#    "\fileshareping /persistent:Yes")
+#
+# Change directory, ping and save result in log
+#$vm2ip = az network public-ip list --query "[1].ipAddress"
+#Z:
+#ping $vm2ip > pinglog.txt
+#
+#################################################
