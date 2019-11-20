@@ -1,5 +1,5 @@
 # Install dependencies and azure cmdlets
-# Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 Install-Module -Name Az -AllowClobber -Scope CurrentUser -Force
 # Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'
 
