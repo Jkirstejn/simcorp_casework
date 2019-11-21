@@ -25,7 +25,7 @@ Invoke-Expression -Command ("cmdkey /add:$([System.Uri]::new($storageAccount.Con
 Invoke-Expression -Command ("net use Z: \\$([System.Uri]::new($storageAccount.Context.FileEndPoint).Host)" + `
     "\fileshareping /persistent:Yes")
 
-$vm2ip = (Get-AzPublicIpAddress -ResourceGroupName "case2rg" -Name vm2-ip).IpAddress
+$vm2ip = (Get-AzPublicIpAddress -ResourceGroupName $resourceGroupName -Name vm2-ip).IpAddress
 Z:
 ping $vm2ip > pinglog.txt
 
@@ -48,7 +48,7 @@ ping $vm2ip > pinglog.txt
 #Invoke-Expression -Command ("net use Z: \\$([System.Uri]::new($storageAccount.Context.FileEndPoint).Host)" + `
 #    "\fileshareping /persistent:Yes")
 #
-# $vm2ip = (Get-AzPublicIpAddress -ResourceGroupName "case2rg" -Name vm2-ip).IpAddress
+# $vm2ip = (Get-AzPublicIpAddress -ResourceGroupName $resourceGroupName -Name vm2-ip).IpAddress
 #
 # Z:
 # ping $vm2ip > pinglog.txt
